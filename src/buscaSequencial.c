@@ -1,0 +1,50 @@
+#include "buscaSequencial.h"// Inclui as declarações das structs e protótipos
+#include <stdlib.h> // Para malloc e free
+#include <string.h> // Se você precisar de memcpy em algum momento (não diretamente na busca simples)
+#include "componentes.h"
+
+
+
+void *buscaSequencialGenerica(int chave, FILE *in, FILE *log, int (*compara)(const void *elemento, int chave), size_t tamanho_struct) {
+    if (in == NULL) {
+        fprintf(log, "Erro: Arquivo de entrada nulo na busca sequencial.\n");
+        return NULL;
+    }
+
+    void *elemento = malloc(tamanho_struct);
+    if (elemento == NULL) {
+        fprintf(log, "Erro de alocacao de memoria na busca sequencial.\n");
+        return NULL;
+    }
+
+    fseek(in, 0, SEEK_SET);
+
+    while (fread(elemento, tamanho_struct, 1, in) == 1) {
+        if (compara(elemento, chave) == 0) {
+            fprintf(log, "Elemento com chave %d encontrado.\n", chave);
+            return elemento;
+        }
+    }
+
+    fprintf(log, "Elemento com chave %d nao encontrado.\n", chave);
+    free(elemento);
+    return NULL;
+}
+
+// Implementações das funções de comparação (podem estar aqui ou em um arquivo separado como 'comparacao.c')
+// Eu prefiro mantê-las aqui se elas forem usadas primariamente com a busca sequencial.
+
+int comparaTComp(const void *elemento, int chave) {
+    const TComp *comp = (const TComp *)elemento;
+    return (comp->cod == chave) ? 0 : -1;
+}
+
+int comparaTClie(const void *elemento, int chave) {
+    const TClie *clie = (const TClie *)elemento;
+    return (clie->cod == chave) ? 0 : -1;
+}
+
+int comparaTLoca(const void *elemento, int chave) {
+    const TLoca *loca = (const TLoca *)elemento;
+    return (loca->cod == chave) ? 0 : -1;
+}
