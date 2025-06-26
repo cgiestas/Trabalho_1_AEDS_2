@@ -1,9 +1,7 @@
-#include "buscaSequencial.h"// Inclui as declarações das structs e protótipos
-#include <stdlib.h> // Para malloc e free
-#include <string.h> // Se você precisar de memcpy em algum momento (não diretamente na busca simples)
+#include "buscaSequencial.h"
+#include <stdlib.h> 
+#include <string.h> 
 #include "componentes.h"
-
-
 
 void *buscaSequencialGenerica(int chave, FILE *in, FILE *log, int (*compara)(const void *elemento, int chave), size_t tamanho_struct) {
     if (in == NULL) {
@@ -27,7 +25,7 @@ void *buscaSequencialGenerica(int chave, FILE *in, FILE *log, int (*compara)(con
     }
 
     fprintf(log, "Elemento com chave %d nao encontrado.\n", chave);
-    free(elemento);
+
     return NULL;
 }
 

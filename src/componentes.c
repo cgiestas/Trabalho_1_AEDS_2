@@ -106,8 +106,6 @@ void salvaclie(TClie *clie, FILE *out) {
     
 }
 
-
-
 // Salva funcionario no arquivo out, na posicao atual do cursor
 void salvaloca(TLoca *loca, FILE *out) {
     fwrite(&loca->cod, sizeof(int), 1, out);
@@ -120,8 +118,6 @@ void salvaloca(TLoca *loca, FILE *out) {
     fwrite(&loca->valor_total, sizeof(float), 1, out);
     fwrite(&loca->ativa, sizeof(int), 1, out);
 }
-
-
 
 // // retorna a quantidade de registros no arquivo
 // int tamanho_arquivo(FILE *arq) {
@@ -147,7 +143,6 @@ TComp *lecomp(FILE *in) {
     return comp;
 }
 
-
 // Le um funcionario do arquivo in na posicao atual do cursor
 // Retorna um ponteiro para funcionario lido do arquivo
 TClie *leclie(FILE *in) {
@@ -162,7 +157,6 @@ TClie *leclie(FILE *in) {
     fread(&clie->email, sizeof(char), sizeof(clie->email), in);
     return clie;
 }
-
 
 // Le um funcionario do arquivo in na posicao atual do cursor
 // Retorna um ponteiro para funcionario lido do arquivo
@@ -181,7 +175,6 @@ TLoca *leloca(FILE *in) {
     fread(&loca->ativa, sizeof(int), 1, in);
     return loca;
 }
-
 
 // Imprime computadores
 void imprimecomp(TComp *comp) {
@@ -204,7 +197,7 @@ void imprimecomp(TComp *comp) {
 // Imprime clientes
 void imprimeclie(TClie *clie) {
     printf("**********************************************");
-    printf("\nFuncionario de codigo ");
+    printf("\nCliente de codigo ");
     printf("%d", clie->cod);
     printf("\nNome: ");
     printf("%s", clie->nome);
@@ -304,45 +297,9 @@ void embaralha(int *vet, int tam) {
     }
 }
 
-void shuffle(int *vet,int MAX,int MIN) {
-    srand(time(NULL));
-    for (int i = MAX - MIN - 1; i > 0; i--) {
-        int j = rand() % (i);
-        int tmp = vet[j];
-        vet[j] = vet[i];
-        vet[i] = tmp;
-    }
-}
-
-
 void imprimirBase(FILE *out, int escolha){
     printf("\nImprimindo a base de dados...\n");
-
-    // rewind(out);
-    // TComp *comp;
-
-    // while ((comp = lecomp(out)) != NULL)
-    //     imprimecomp(comp);
-
-    // free(comp);
-
-    // rewind(out);
-    // TClie *clie;
-
-    // while ((clie = leclie(out)) != NULL)
-    //     imprimeclie(clie);
-
-    // free(clie);
-
-    // rewind(out);
-    // TLoca *loca;
-
-    // while ((loca = leloca(out)) != NULL)
-    //     imprimeloca(loca);
-
-    // free(loca);
-
-     rewind(out);
+    rewind(out);
 
     switch (escolha) {
         case 1: {
@@ -398,39 +355,23 @@ int compara_loca(const void *a, const void *b)
     return 0;
 }
 
-// Função para obter a chave de um Tcomp
-int obtemChaveComp(const void *registro) {
-    // Converte o ponteiro void* para um ponteiro de Tcomp*
-    const TComp *comp = (const TComp *)registro;
-    return comp->cod;
-}
+// // Função para obter a chave de um Tcomp
+// int obtemChaveComp(const void *registro) {
+//     // Converte o ponteiro void* para um ponteiro de Tcomp*
+//     const TComp *comp = (const TComp *)registro;
+//     return comp->cod;
+// }
 
-// Função para obter a chave de um Tclie
-int obtemChaveClie(const void *registro) {
-    // Converte o ponteiro void* para um ponteiro de Tclie*
-    const TClie *clie = (const TClie *)registro;
-    return clie->cod;
-}
+// // Função para obter a chave de um Tclie
+// int obtemChaveClie(const void *registro) {
+//     // Converte o ponteiro void* para um ponteiro de Tclie*
+//     const TClie *clie = (const TClie *)registro;
+//     return clie->cod;
+// }
 
-// Função para obter a chave de uma Tloca
-int obtemChaveLoca(const void *registro) {
-    // Converte o ponteiro void* para um ponteiro de Tloca*
-    const TLoca *loca = (const TLoca *)registro;
-    return loca->cod;
-}
-
-
-//COMO COMPARAR OS CONTRATOS DE LOCAÇÃO??
-// int compara(TLoca *c1, TLoca *c2)
-// {
-// 	if (c1 == NULL) {
-// 		return (c2 == NULL);
-// 	}
-// 	if (c1->cod != c2->cod) {
-// 		return 0;
-// 	}
-// 	if (strcmp(c1->valor_total, c2->valor_total) != 0) {
-// 		return 0;
-// 	}
-// 	return 1;
+// // Função para obter a chave de uma Tloca
+// int obtemChaveLoca(const void *registro) {
+//     // Converte o ponteiro void* para um ponteiro de Tloca*
+//     const TLoca *loca = (const TLoca *)registro;
+//     return loca->cod;
 // }

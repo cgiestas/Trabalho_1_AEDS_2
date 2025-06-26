@@ -1,9 +1,8 @@
 #include "buscaBinaria.h"
 #include "buscaSequencial.h"
-#include "componentes.h"// Inclui as declarações
-#include <stdlib.h>     // Para malloc e free
-#include <string.h>     // Para memcpy (opcional, mas bom ter)
-
+#include "componentes.h"
+#include <stdlib.h>     
+#include <string.h>     
 
 // Implementação da busca binária genérica
 void *buscaBinariaGenerica(int chave, FILE *in, FILE *log,

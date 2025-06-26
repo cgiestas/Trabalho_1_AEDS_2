@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#pragma pack(push, 1)
+
 typedef struct Computador
 {
     int cod;
@@ -34,6 +36,8 @@ typedef struct Locacao
     float valor_total;
     int ativa;
 } TLoca;
+
+#pragma pack(pop)
 
 // Retorna tamanho do funcionario em bytes
 int tamanho_registrocomp();

@@ -2,10 +2,10 @@
 #define INTERACOES_H
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "componentes.h"
 
-// Locar computador, finalizar locação, lista de computadores e locações feitas por cliente
-
+TComp *carregaComp(FILE *arquivo, int *qtd);
+TClie *carregaClie(FILE *arquivo, int *qtd);
+TLoca *carregaLoca(FILE *arquivo, int *qtd);
 
 #endif
