@@ -5,38 +5,6 @@
 #include <math.h>
 #include <time.h>
 
-
-// // Retorna tamanho do computador em bytes
-// int tamanho_registrocomp() {
-//     return sizeof(int)  //cod
-//            + sizeof(char) * 50 //marca
-//            + sizeof(char) * 50 //modelo
-//            + sizeof(char) * 2 //modelo
-//            + sizeof(float) //valor mensal
-//            + sizeof(int); //se ta disponivel
-// }
-
-// // Retorna tamanho do cliente em bytes
-// int tamanho_registrocli() {
-//     return sizeof(int)  //cod
-//            + sizeof(char) * 50 //nome empresa ou pessoa fisica
-//            + sizeof(char) * 15 //cpf/cnpj
-//            + sizeof(int)  //telefone
-//            + sizeof(char) * 50; //email
-// }
-
-// // Retorna tamanho do locacao em bytes
-// int tamanho_registroloc() {
-//     return sizeof(int)  //cod
-//            + sizeof(int) //id computador
-//            + sizeof(int) // id cliente
-//            + sizeof(int) // quantidade de computadores
-//            + sizeof(char) * 11 //data inicio locacao
-//            + sizeof(char) * 11 //data fim locacao
-//            + sizeof(float); // valor total locacao
-//            + sizeof(int); // se esta ativa
-// }
-
 // Cria computador.
 TComp *computador(int cod, char *marca, char *modelo,char *processador, float valor, int disponivel) {
     TComp *comp = (TComp *) malloc(sizeof(TComp));
@@ -118,15 +86,6 @@ void salvaloca(TLoca *loca, FILE *out) {
     fwrite(&loca->valor_total, sizeof(float), 1, out);
     fwrite(&loca->ativa, sizeof(int), 1, out);
 }
-
-// // retorna a quantidade de registros no arquivo
-// int tamanho_arquivo(FILE *arq) {
-//     fseek(arq, 0, SEEK_END);
-//     int tam = trunc(ftell(arq) / tamanho_registro()); 
-//     return tam;
-// }
-
-
 // Le um funcionario do arquivo in na posicao atual do cursor
 // Retorna um ponteiro para funcionario lido do arquivo
 TComp *lecomp(FILE *in) {
@@ -318,9 +277,21 @@ void imprimirBase(FILE *out, int escolha){
         }
         case 3: {
             TLoca *loca;
-            while ((loca = leloca(out)) != NULL)
-                imprimeloca(loca);
-            free(loca);
+            int ativas_encontradas = 0;
+            printf("\nExibindo apenas locacoes ATIVAS...\n");
+            
+            while ((loca = leloca(out)) != NULL) {
+                // Verifica se a locação está ativa antes de imprimir
+                if (loca->ativa == 1) {
+                    imprimeloca(loca);
+                    ativas_encontradas++;
+                }
+                free(loca); // Libera a memória alocada por leloca, independentemente de imprimir ou não
+            }
+            
+            if (ativas_encontradas == 0) {
+                printf("Nenhuma locacao ativa no momento.\n");
+            }
             break;
         }
     }

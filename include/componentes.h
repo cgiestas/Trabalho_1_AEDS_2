@@ -1,5 +1,5 @@
-#ifndef FUNCIONARIO_H_INCLUDED
-#define FUNCIONARIO_H_INCLUDED
+#ifndef COMPONENTES_H
+#define COMPONENTES_H
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -104,4 +104,4 @@ int compara_comp(const void *a, const void *b);
 int compara_clie(const void *a, const void *b);
 int compara_loca(const void *a, const void *b);
 
-#endif // FUNCIONARIO_H_INCLUDED
+#endif 

@@ -1,11 +1,11 @@
 #include "buscaBinaria.h"
 #include "buscaSequencial.h"
 #include "componentes.h"
+#include "interacoes.h"
 #include "merge.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <interacoes.h>
 
 int main()
 {
@@ -43,169 +43,102 @@ int main()
         imprimirBase(locacoes, 3);
     }
 
-    int qtd_comp;
-    int qtd_clie;
-    int qtd_loca;
+    int opcao;
+    int dados_ordenados = 0; //para saber se precisa ordenar
 
-    TComp *comp = carregaComp(computadores, &qtd_comp);
-    TClie *clie = carregaClie(clientes, &qtd_clie);
-    TLoca *loca = carregaLoca(locacoes, &qtd_loca);
+    do {
+        exibirMenu();
+        scanf("%d", &opcao);
 
-    //---- Busca Sequencial ----
-    // Exemplo de busca por um computador
-    int chave_comp = 4;
-    TComp *computador_encontrado = (TComp *)buscaSequencialGenerica(
-        chave_comp, computadores, log, comparaTComp, sizeof(TComp));
+        switch (opcao) {
+            case 1:
+                realizarLocacaoUI(computadores, clientes, locacoes, log);
+                dados_ordenados = 0; // Modificou dados, precisa reordenar
+                break;
+            case 2:
+                finalizarLocacaoUI(computadores, locacoes, log);
+                dados_ordenados = 0; // Modificou dados, precisa reordenar
+                break;
+            case 3:
+                visualizarLocacoesClienteUI(locacoes, log);
+                break;
+            case 4:
+                menuBuscaSequencial(computadores, clientes, locacoes, log);
+                break;
+            case 5:
+                if (dados_ordenados) {
+                menuBuscaBinaria(computadores, clientes, locacoes, log);
+                } else {
+                    printf("\nERRO: Os dados precisam ser ordenados primeiro!\n");
+                    printf("Por favor, execute a Opcao 6 antes de tentar uma busca binaria.\n");
+                }
+        break;
+                break;
+            case 6: {
+                int qtd_comp, qtd_clie, qtd_loca;
+                
+                // Carrega os dados dos arquivos para a memória
+                TComp *comp = carregaComp(computadores, &qtd_comp);
+                TClie *clie = carregaClie(clientes, &qtd_clie);
+                TLoca *loca = carregaLoca(locacoes, &qtd_loca);
 
-    if (computador_encontrado != NULL)
-    {
-        printf("Computador encontrado: ID %d, Marca %s, Modelo %s, Processador %s, Valor %f, Disponível %d\n", computador_encontrado->cod, computador_encontrado->marca, computador_encontrado->modelo, computador_encontrado->processador, computador_encontrado->valor, computador_encontrado->disponivel);
-        free(computador_encontrado);
-    }
-    else
-    {
-        printf("Computador com ID %d nao encontrado.\n", chave_comp);
-    }
+                // Ordena os vetores em memória
+                // chamando a função de ordenção
+                mergesort(comp, qtd_comp, sizeof(TComp), compara_comp);
+                mergesort(clie, qtd_clie, sizeof(TClie), compara_clie);
+                mergesort(loca, qtd_loca, sizeof(TLoca), compara_loca);
 
-    // Exemplo de busca por um cliente
-    int chave_clie = 3;
-    TClie *cliente_encontrado = (TClie *)buscaSequencialGenerica(
-        chave_clie, clientes, log, comparaTClie, sizeof(TClie));
+                // Reescreve os arquivos com os dados ordenados
+                freopen("computadores.dat", "w+b", computadores);
+                for(int i = 0; i < qtd_comp; i++) salvacomp(&comp[i], computadores);
+                
+                freopen("clientes.dat", "w+b", clientes);
+                for(int i = 0; i < qtd_clie; i++) salvaclie(&clie[i], clientes);
 
-    if (cliente_encontrado != NULL)
-    {
-        printf("Cliente encontrado: ID %d, Nome %s, CNPJ/CPF %s, Telefone %d, Email %s\n", cliente_encontrado->cod, cliente_encontrado->nome, cliente_encontrado->cpf_cnpj, cliente_encontrado->telefone, cliente_encontrado->email);
-        free(cliente_encontrado);
-    }
-    else
-    {
-        printf("Cliente com ID %d nao encontrado.\n", chave_clie);
-    }
+                freopen("locacoes.dat", "w+b", locacoes);
+                for(int i = 0; i < qtd_loca; i++) salvaloca(&loca[i], locacoes);
 
-    // Exemplo de busca por uma locação
-    int chave_loca = 2; // ID da locação que você quer buscar
-    TLoca *locacao_encontrada = (TLoca *)buscaSequencialGenerica(
-        chave_loca, locacoes, log, comparaTLoca, sizeof(TLoca));
+                printf("\n--- DADOS ORDENADOS ---\n");
+                printf("\n--- COMPUTADORES ORDENADOS ---\n");
+                imprimirBase(computadores, 1);
+                printf("\n--- CLIENTES ORDENADOS ---\n");
+                imprimirBase(clientes, 2);
+                printf("\n--- LOCACOES ORDENADAS ---\n");
+                imprimirBase(locacoes, 3);
+                
+                dados_ordenados = 1; // Marca que os dados agora estão ordenados
 
-    if (locacao_encontrada != NULL)
-    {
-        printf("Locacao encontrada: ID %d, com data de inicio %s e data de fim %s, e ativa %d\n", locacao_encontrada->cod, locacao_encontrada->data_inicial, locacao_encontrada->data_final, locacao_encontrada->ativa);
-        // 1. Buscar o Cliente
-        int id_cliente_da_locacao = locacao_encontrada->cod_clie;
-        TClie *cliente_da_locacao = (TClie *)buscaSequencialGenerica(
-            id_cliente_da_locacao, clientes, log, comparaTClie, sizeof(TClie));
-
-        if (cliente_da_locacao != NULL)
-        {
-            printf("Cliente: ID %d, Nome: %s\n", cliente_da_locacao->cod, cliente_da_locacao->nome);
-            free(cliente_da_locacao); // Lembre-se de liberar a memória
-        }
-        else
-        {
-            printf("Cliente com ID %d nao encontrado para esta locacao.\n", id_cliente_da_locacao);
-        }
-
-        // 2. Buscar o Computador
-        int id_computador_da_locacao = locacao_encontrada->cod_comp;
-        TComp *computador_da_locacao = (TComp *)buscaSequencialGenerica(
-            id_computador_da_locacao, computadores, log, comparaTComp, sizeof(TComp));
-
-        if (computador_da_locacao != NULL)
-        {
-            // Supondo que Tcomp tenha campos para marca e modelo
-            printf(" Computador: ID %d, Marca: %s, Modelo: %s, Processador: %s, Valor Unitario: %f, Quantidade Locada: %d, Valor Total Locacao: %f\n", computador_da_locacao->cod, computador_da_locacao->marca, computador_da_locacao->modelo, computador_da_locacao->processador, computador_da_locacao->valor, locacao_encontrada->quantidade, locacao_encontrada->valor_total);
-            free(computador_da_locacao); // libera a memoria
-        }
-        else
-        {
-            printf(" Computador com ID %d nao encontrado para esta locacao.\n", id_computador_da_locacao);
-        }
-
-        free(locacao_encontrada); // Lembre-se de liberar a memória da locação
-    }
-    else
-    {
-        printf("Locacao com ID %d nao encontrada.\n", chave_loca);
-    }
-
-    // chamando a função de ordenção
-    mergesort(comp, qtd_comp, sizeof(TComp), compara_comp);
-    mergesort(clie, qtd_clie, sizeof(TClie), compara_clie);
-    mergesort(loca, qtd_loca, sizeof(TLoca), compara_loca);
-
-    printf("\n=== COMPUTADORES ORDENADOS ===\n");
-    for (int i = 0; i < qtd_comp; i++) {
-        imprimecomp(&comp[i]);
-    }
-
-    printf("\n=== CLIENTES ORDENADOS ===\n");
-    for (int i = 0; i < qtd_clie; i++) {
-        imprimeclie(&clie[i]);
-    }
-
-    printf("\n=== LOCAÇÕES ORDENADAS ===\n");
-    for (int i = 0; i < qtd_loca; i++) {
-        imprimeloca(&loca[i]);
-    }
-
-
-    //---Busca Binaria---
-    // Exemplo de busca por um computador
-    int chave_comp_bin = 2;
-    TComp *computador_encontrado_bin = buscaComputadorBinario(chave_comp_bin, computadores, log);
-
-    if (computador_encontrado_bin != NULL)
-    {
-        printf("Computador encontrado (Binaria): ID %d, Marca %s, Modelo %s, Processador %s, Valor unitario %f, disponivel %d\n", computador_encontrado_bin->cod, computador_encontrado_bin->marca,
-               computador_encontrado_bin->modelo, computador_encontrado_bin->processador, computador_encontrado_bin->valor, computador_encontrado_bin->disponivel);
-        free(computador_encontrado_bin);
-    }
-    else
-    {
-        printf("Computador com ID %d nao encontrado (Binaria).\n", chave_comp_bin);
-    }
-
-    printf("\n");
-
-    // Exemplo de busca por uma locação, e depois buscando detalhes do cliente e computador
-    int chave_loca_bin = 2;
-    TLoca *locacao_encontrada_bin = buscaLocacaoBinaria(chave_loca_bin, locacoes, log);
-
-    if (locacao_encontrada_bin != NULL)
-    {
-        printf("Locacao encontrada (Binaria): ID %d\n", locacao_encontrada_bin->cod);
-
-        TClie *cliente_da_locacao = buscaClienteBinario(locacao_encontrada_bin->cod_clie, clientes, log);
-        if (cliente_da_locacao != NULL)
-        {
-            printf("  Cliente: ID %d, Nome: %s\n", cliente_da_locacao->cod, cliente_da_locacao->nome);
-            free(cliente_da_locacao);
-        }
-        else
-        {
-            printf("  Cliente com ID %d (associado a locacao) nao encontrado.\n", locacao_encontrada_bin->cod_clie);
+                // Libera a memória dos vetores
+                free(comp);
+                free(clie);
+                free(loca);
+                break;
+            }
+            case 0:
+                printf("Saindo do programa...\n");
+                break;
+            default:
+                printf("Opcao invalida! Tente novamente.\n");
+                break;
         }
 
-        TComp *computador_da_locacao = buscaComputadorBinario(locacao_encontrada_bin->cod_comp, computadores, log);
-        if (computador_da_locacao != NULL)
-        {
-            printf("  Computador: ID %d, Marca: %s, Modelo: %s\n",
-                   computador_da_locacao->cod,
-                   computador_da_locacao->marca,
-                   computador_da_locacao->modelo);
-            free(computador_da_locacao);
-        }
-        else
-        {
-            printf("  Computador com ID %d (associado a locacao) nao encontrado.\n", locacao_encontrada_bin->cod_comp);
-        }
+    } while (opcao != 0);
 
-        free(locacao_encontrada_bin);
-    }
-    else
-    {
-        printf("Locacao com ID %d nao encontrada (Binaria).\n", chave_loca_bin);
-    }
+
+    // printf("\n=== COMPUTADORES ORDENADOS ===\n");
+    // for (int i = 0; i < qtd_comp; i++) {
+    //     imprimecomp(&comp[i]);
+    // }
+
+    // printf("\n=== CLIENTES ORDENADOS ===\n");
+    // for (int i = 0; i < qtd_clie; i++) {
+    //     imprimeclie(&clie[i]);
+    // }
+
+    // printf("\n=== LOCACOES ORDENADAS ===\n");
+    // for (int i = 0; i < qtd_loca; i++) {
+    //     imprimeloca(&loca[i]);
+    // }
 
     fclose(computadores);
     fclose(clientes);
