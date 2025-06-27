@@ -1,27 +1,14 @@
 #include "buscaBinaria.h"
 #include "buscaSequencial.h"
 #include "componentes.h"
-#include <stdlib.h>     
-#include <string.h>     
+#include <stdlib.h>
+#include <string.h> 
 
-// Implementação da busca binária genérica
-void *buscaBinariaGenerica(int chave, FILE *in, FILE *log,
-                           int (*compara)(const void *elemento, int chave),
-                           size_t tamanho_struct) {
-    if (in == NULL) {
-        fprintf(log, "Erro: Arquivo de entrada nulo na busca binaria.\n");
+void *buscaBinariaGenerica(void *vetor,long num_registros,size_t tamanho_struct, int chave, int (*compara)(const void *elemento, int chave), FILE *log) {
+    if (vetor == NULL) {
+        fprintf(log, "Erro: Vetor de entrada nulo na busca binaria.\n");
         return NULL;
     }
-
-    void *elemento = malloc(tamanho_struct);
-    if (elemento == NULL) {
-        fprintf(log, "Erro de alocacao de memoria na busca binaria.\n");
-        return NULL;
-    }
-
-    fseek(in, 0, SEEK_END);
-    long tamanho_arquivo = ftell(in);
-    long num_registros = tamanho_arquivo / tamanho_struct;
 
     long esquerda = 0;
     long direita = num_registros - 1;
@@ -31,20 +18,13 @@ void *buscaBinariaGenerica(int chave, FILE *in, FILE *log,
 
     while (esquerda <= direita) {
         meio = esquerda + (direita - esquerda) / 2;
+        void *elemento_meio = (char *)vetor + (meio * tamanho_struct);
 
-        fseek(in, meio * tamanho_struct, SEEK_SET);
-
-        if (fread(elemento, tamanho_struct, 1, in) != 1) {
-            fprintf(log, "Erro de leitura no arquivo durante busca binaria.\n");
-            free(elemento);
-            return NULL;
-        }
-
-        int resultado_comparacao = compara(elemento, chave);
+        int resultado_comparacao = compara(elemento_meio, chave);
 
         if (resultado_comparacao == 0) {
             fprintf(log, "Elemento com chave %d encontrado na posicao %ld.\n", chave, meio);
-            return elemento;
+            return elemento_meio;
         } else if (resultado_comparacao < 0) {
             esquerda = meio + 1;
             fprintf(log, "Chave %d maior que elemento em %ld. Nova faixa: [%ld, %ld]\n", chave, meio, esquerda, direita);
@@ -55,19 +35,17 @@ void *buscaBinariaGenerica(int chave, FILE *in, FILE *log,
     }
 
     fprintf(log, "Elemento com chave %d nao encontrado.\n", chave);
-    free(elemento);
     return NULL;
 }
 
-// Funções auxiliares de busca específicas que a main vai chamar
-TComp *buscaComputadorBinario(int chave, FILE *in, FILE *log) {
-    return (TComp *)buscaBinariaGenerica(chave, in, log, comparaTComp, sizeof(TComp));
+TComp *buscaComputadorBinario(TComp *vetor_comp, int qtd_comp, int chave, FILE *log) {
+    return (TComp *)buscaBinariaGenerica(vetor_comp, qtd_comp, sizeof(TComp), chave, comparaTComp, log);
 }
 
-TClie *buscaClienteBinario(int chave, FILE *in, FILE *log) {
-    return (TClie *)buscaBinariaGenerica(chave, in, log, comparaTClie, sizeof(TClie));
+TClie *buscaClienteBinario(TClie *vetor_clie, int qtd_clie, int chave, FILE *log) {
+    return (TClie *)buscaBinariaGenerica(vetor_clie, qtd_clie, sizeof(TClie), chave, comparaTClie, log);
 }
 
-TLoca *buscaLocacaoBinaria(int chave, FILE *in, FILE *log) {
-    return (TLoca *)buscaBinariaGenerica(chave, in, log, comparaTLoca, sizeof(TLoca));
+TLoca *buscaLocacaoBinaria(TLoca *vetor_loca, int qtd_loca, int chave, FILE *log) {
+    return (TLoca *)buscaBinariaGenerica(vetor_loca, qtd_loca, sizeof(TLoca), chave, comparaTLoca, log);
 }

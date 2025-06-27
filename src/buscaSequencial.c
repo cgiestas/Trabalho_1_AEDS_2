@@ -29,20 +29,42 @@ void *buscaSequencialGenerica(int chave, FILE *in, FILE *log, int (*compara)(con
     return NULL;
 }
 
-// Implementações das funções de comparação (podem estar aqui ou em um arquivo separado como 'comparacao.c')
-// Eu prefiro mantê-las aqui se elas forem usadas primariamente com a busca sequencial.
-
+// Implementações das funções de comparação 
 int comparaTComp(const void *elemento, int chave) {
     const TComp *comp = (const TComp *)elemento;
-    return (comp->cod == chave) ? 0 : -1;
+    if (comp->cod < chave) {
+        return -1;
+    } 
+    else if (comp->cod > chave) {
+        return 1;  
+    } 
+    else {
+        return 0;  
+    }
 }
 
 int comparaTClie(const void *elemento, int chave) {
     const TClie *clie = (const TClie *)elemento;
-    return (clie->cod == chave) ? 0 : -1;
+    if (clie->cod < chave) {
+        return -1;
+    } 
+    else if (clie->cod > chave) {
+        return 1;
+    } 
+    else {
+        return 0;
+    }
 }
 
 int comparaTLoca(const void *elemento, int chave) {
     const TLoca *loca = (const TLoca *)elemento;
-    return (loca->cod == chave) ? 0 : -1;
+    if (loca->cod < chave) {
+        return -1;
+    } 
+    else if (loca->cod > chave) {
+        return 1;
+    } 
+    else {
+        return 0;
+    }
 }

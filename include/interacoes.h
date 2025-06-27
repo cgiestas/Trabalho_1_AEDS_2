@@ -15,8 +15,6 @@ void realizarLocacaoUI(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log);
 void finalizarLocacaoUI(FILE *f_comp, FILE *f_loca, FILE *f_log);
 void visualizarLocacoesClienteUI(FILE *f_loca, FILE *f_log);
 void menuBuscaSequencial(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log);
-void menuBuscaBinaria(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log);
-
-
+void menuBuscaBinaria(TComp *vetor_comp, int qtd_comp, TClie *vetor_clie, int qtd_clie, TLoca *vetor_loca, int qtd_loca, FILE *log);
 
 #endif

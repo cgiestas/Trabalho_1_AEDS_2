@@ -68,9 +68,9 @@ void alugarComputador(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log, int
     if (cliente == NULL) {
         printf("Erro: Cliente com o codigo %d nao encontrado.\n", cod_clie);
         fprintf(f_log, "Tentativa de aluguel falhou: Cliente com codigo %d nao existe.\n", cod_clie);
-        return; // Não precisa do free(cliente) se ele é NULL
+        return;
     }
-    free(cliente); // Cliente encontrado, pode liberar a memória e continuar
+    free(cliente);
 
     TComp *computador = (TComp *)buscaSequencialGenerica(cod_comp, f_comp, f_log, comparaTComp, sizeof(TComp));
     if (computador == NULL) {
@@ -90,7 +90,7 @@ void alugarComputador(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log, int
     rewind(f_loca);
     TLoca* locacoes = carregaLoca(f_loca, &qtd_loca);
     int proximo_cod_loca = (qtd_loca > 0) ? locacoes[qtd_loca - 1].cod + 1 : 1;
-    if (locacoes != NULL) { // Adicionar verificação para evitar free(NULL)
+    if (locacoes != NULL) {
         free(locacoes);
     }
 
@@ -128,9 +128,10 @@ void exibirMenu() {
     printf("1. Realizar uma Locacao\n");
     printf("2. Finalizar uma Locacao\n");
     printf("3. Visualizar Locacoes de um Cliente\n");
-    printf("4. Executar Busca Sequencial\n");
-    printf("5. Executar Busca Binaria (Apos Ordenar)\n");
-    printf("6. Imprimir Dados Ordenados\n");
+    printf("4. Visualizar Lista de Computadores Atualizada\n");
+    printf("5. Executar Busca Sequencial\n");
+    printf("6. Executar Busca Binaria (Apos Ordenar)\n");
+    printf("7. Imprimir Dados Ordenados\n");
     printf("0. Sair\n");
     printf("==========================\n");
     printf("Escolha uma opcao: ");
@@ -248,7 +249,7 @@ void menuBuscaSequencial(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log){
     printf("\n--- Busca Sequencial ---\n");
     printf("1. Buscar Computador\n2. Buscar Cliente\n3. Buscar Locacao\nEscolha: ");
     scanf("%d", &escolha);
-    printf("Digite o codigo (chave) a ser buscado: ");
+    printf("\nDigite o codigo (chave) a ser buscado: ");
     scanf("%d", &chave);
 
     switch(escolha){
@@ -258,12 +259,12 @@ void menuBuscaSequencial(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log){
 
             if (computador_encontrado != NULL)
             {
-                printf("Computador encontrado: ID %d, Marca %s, Modelo %s, Processador %s, Valor %f, Disponível %d\n", computador_encontrado->cod, computador_encontrado->marca, computador_encontrado->modelo, computador_encontrado->processador, computador_encontrado->valor, computador_encontrado->disponivel);
+                printf("\nComputador encontrado: ID %d, Marca %s, Modelo %s, Processador %s, Valor %f, Disponivel %d\n", computador_encontrado->cod, computador_encontrado->marca, computador_encontrado->modelo, computador_encontrado->processador, computador_encontrado->valor, computador_encontrado->disponivel);
                 free(computador_encontrado);
             }
             else
             {
-                printf("Computador com ID %d nao encontrado.\n", chave);
+                printf("\nComputador com ID %d nao encontrado.\n", chave);
             }
             break;
         }
@@ -273,12 +274,12 @@ void menuBuscaSequencial(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log){
 
             if (cliente_encontrado != NULL)
             {
-                printf("Cliente encontrado: ID %d, Nome %s, CNPJ/CPF %s, Telefone %d, Email %s\n", cliente_encontrado->cod, cliente_encontrado->nome, cliente_encontrado->cpf_cnpj, cliente_encontrado->telefone, cliente_encontrado->email);
+                printf("\nCliente encontrado: ID %d, Nome %s, CNPJ/CPF %s, Telefone %d, Email %s\n", cliente_encontrado->cod, cliente_encontrado->nome, cliente_encontrado->cpf_cnpj, cliente_encontrado->telefone, cliente_encontrado->email);
                 free(cliente_encontrado);
             }
             else
             {
-                printf("Cliente com ID %d nao encontrado.\n", chave);
+                printf("\nCliente com ID %d nao encontrado.\n", chave);
             }
             break;
         }
@@ -288,29 +289,29 @@ void menuBuscaSequencial(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log){
 
             if (locacao_encontrada != NULL)
             {
-                printf("Locacao encontrada: ID %d, com data de inicio %s e data de fim %s, e ativa %d\n", locacao_encontrada->cod, locacao_encontrada->data_inicial, locacao_encontrada->data_final, locacao_encontrada->ativa);
-                // 1. Buscar o Cliente
+                printf("\nLocacao encontrada: ID %d, com data de inicio %s e data de fim %s, e ativa %d\n", locacao_encontrada->cod, locacao_encontrada->data_inicial, locacao_encontrada->data_final, locacao_encontrada->ativa);
                 int id_cliente_da_locacao = locacao_encontrada->cod_clie;
                 TClie *cliente_da_locacao = (TClie *)buscaSequencialGenerica(
                     id_cliente_da_locacao, f_clie, f_log, comparaTClie, sizeof(TClie));
 
                 if (cliente_da_locacao != NULL)
                 {
-                    printf("Cliente: ID %d, Nome: %s\n", cliente_da_locacao->cod, cliente_da_locacao->nome);
-                    free(cliente_da_locacao); // Lembre-se de liberar a memória
+                    printf("\nCliente: ID %d, Nome: %s\n", cliente_da_locacao->cod, cliente_da_locacao->nome);
+                    free(cliente_da_locacao); 
                 }
                 else
                 {
-                    printf("Cliente com ID %d nao encontrado para esta locacao.\n", id_cliente_da_locacao);
+                    printf("\nCliente com ID %d nao encontrado para esta locacao.\n", id_cliente_da_locacao);
                 }
             }
             break;
         }
-        default: printf("Opcao invalida.\n");
+        default: printf("\nOpcao invalida.\n");
     }
 }
 
-void menuBuscaBinaria(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log){
+void menuBuscaBinaria(TComp *vetor_comp, int qtd_comp, TClie *vetor_clie, int qtd_clie, TLoca *vetor_loca, int qtd_loca, FILE *log)
+{
     int escolha, chave;
     printf("\n--- Busca Binaria ---\n");
     printf("LEMBRE-SE: Os dados devem estar ordenados para a busca binaria funcionar.\n");
@@ -321,66 +322,55 @@ void menuBuscaBinaria(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log){
 
     switch(escolha){
         case 1: {
-            TComp *computador_encontrado_bin = buscaComputadorBinario(chave, f_comp, f_log);
-            if (computador_encontrado_bin != NULL)
-            {
-                printf("Computador encontrado (Binaria): ID %d, Marca %s, Modelo %s, Processador %s, Valor unitario %f, disponivel %d\n", computador_encontrado_bin->cod, computador_encontrado_bin->marca,
-                    computador_encontrado_bin->modelo, computador_encontrado_bin->processador, computador_encontrado_bin->valor, computador_encontrado_bin->disponivel);
-                free(computador_encontrado_bin);
-            }
-            else
-            {
+            TComp *computador_encontrado_bin = buscaComputadorBinario(vetor_comp, qtd_comp, chave, log);
+            
+            if (computador_encontrado_bin != NULL) {
+                printf("Computador encontrado (Binaria): ID %d, Marca %s, Modelo %s, Processador %s, Valor unitario %f, disponivel %d\n", 
+                    computador_encontrado_bin->cod, computador_encontrado_bin->marca,
+                    computador_encontrado_bin->modelo, computador_encontrado_bin->processador, 
+                    computador_encontrado_bin->valor, computador_encontrado_bin->disponivel);
+            } else {
                 printf("Computador com ID %d nao encontrado (Binaria).\n", chave);
             }
-
             printf("\n");
             break;
         }
         case 2: {
-            TClie* c = buscaClienteBinario(chave, f_clie, f_log);
-            if(c) { imprimeclie(c); free(c); } else { printf("Nao encontrado.\n"); }
+            TClie* c = buscaClienteBinario(vetor_clie, qtd_clie, chave, log);
+            if(c) { 
+                imprimeclie(c); 
+            } else { 
+                printf("Nao encontrado.\n"); 
+            }
             break;
         }
         case 3: {
-            TLoca *locacao_encontrada_bin = buscaLocacaoBinaria(chave, f_loca, f_log);
+            TLoca *locacao_encontrada_bin = buscaLocacaoBinaria(vetor_loca, qtd_loca, chave, log);
 
-            if (locacao_encontrada_bin != NULL)
-            {
+            if (locacao_encontrada_bin != NULL) {
                 printf("Locacao encontrada (Binaria): ID %d\n", locacao_encontrada_bin->cod);
 
-                TClie *cliente_da_locacao = buscaClienteBinario(locacao_encontrada_bin->cod_clie, f_clie, f_log);
-                if (cliente_da_locacao != NULL)
-                {
+                TClie *cliente_da_locacao = buscaClienteBinario(vetor_clie, qtd_clie, locacao_encontrada_bin->cod_clie, log);
+                if (cliente_da_locacao != NULL) {
                     printf("  Cliente: ID %d, Nome: %s\n", cliente_da_locacao->cod, cliente_da_locacao->nome);
-                    free(cliente_da_locacao);
-                }
-                else
-                {
+                } else {
                     printf("  Cliente com ID %d (associado a locacao) nao encontrado.\n", locacao_encontrada_bin->cod_clie);
                 }
-
-                TComp *computador_da_locacao = buscaComputadorBinario(locacao_encontrada_bin->cod_comp, f_comp, f_log);
-                if (computador_da_locacao != NULL)
-                {
+                TComp *computador_da_locacao = buscaComputadorBinario(vetor_comp, qtd_comp, locacao_encontrada_bin->cod_comp, log);
+                if (computador_da_locacao != NULL) {
                     printf("  Computador: ID %d, Marca: %s, Modelo: %s\n",
-                        computador_da_locacao->cod,
-                        computador_da_locacao->marca,
-                        computador_da_locacao->modelo);
-                    free(computador_da_locacao);
-                }
-                else
-                {
+                           computador_da_locacao->cod,
+                           computador_da_locacao->marca,
+                           computador_da_locacao->modelo);
+                } else {
                     printf("  Computador com ID %d (associado a locacao) nao encontrado.\n", locacao_encontrada_bin->cod_comp);
                 }
-
-                free(locacao_encontrada_bin);
-            }
-            else
-            {
+                
+            } else {
                 printf("Locacao com ID %d nao encontrada (Binaria).\n", chave);
             }
-                    break;
-                }
+            break;
+        }
         default: printf("Opcao invalida.\n");
     }
 }

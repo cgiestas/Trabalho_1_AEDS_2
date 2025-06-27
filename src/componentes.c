@@ -184,7 +184,7 @@ void imprimeloca(TLoca *loca) {
     printf("%s", loca->data_inicial);
     printf("\nData de Final do Contrato: ");
     printf("%s", loca->data_final);
-    printf("\nValor Total Locacao: ");
+    printf("\nValor Mensal Locacao: ");
     printf("%4.2f", loca->valor_total);
     printf("\nSituacao da Locacao: ");
     printf("%d", loca->ativa);
@@ -210,7 +210,7 @@ void criarBase(FILE *out, int tam, int escolha){
     switch(escolha){
         case 1:
             for (int i=0;i<tam;i++){
-                com = computador(vet[i], "Dell", "Inspiron", "I5", 100*i, 1);
+                com = computador(vet[i], "Dell", "Inspiron", "I5", (100*i)+100, 1);
                 salvacomp(com, out);
                 //imprimecomp(com);
                 free(com);
@@ -325,24 +325,3 @@ int compara_loca(const void *a, const void *b)
     if (locaA->cod > locaB->cod) return 1;
     return 0;
 }
-
-// // Função para obter a chave de um Tcomp
-// int obtemChaveComp(const void *registro) {
-//     // Converte o ponteiro void* para um ponteiro de Tcomp*
-//     const TComp *comp = (const TComp *)registro;
-//     return comp->cod;
-// }
-
-// // Função para obter a chave de um Tclie
-// int obtemChaveClie(const void *registro) {
-//     // Converte o ponteiro void* para um ponteiro de Tclie*
-//     const TClie *clie = (const TClie *)registro;
-//     return clie->cod;
-// }
-
-// // Função para obter a chave de uma Tloca
-// int obtemChaveLoca(const void *registro) {
-//     // Converte o ponteiro void* para um ponteiro de Tloca*
-//     const TLoca *loca = (const TLoca *)registro;
-//     return loca->cod;
-// }

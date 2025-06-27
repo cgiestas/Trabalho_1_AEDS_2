@@ -4,14 +4,14 @@
 #define BUSCA_BINARIA_H
 
 #include <stdio.h>
-#include <stddef.h> // Para size_t
+#include <stddef.h>
 #include "componentes.h"
 #include "buscaSequencial.h"
 
-// Protótipo da função genérica de busca binária
-void *buscaBinariaGenerica(int chave, FILE *in, FILE *log, int (*compara)(const void *elemento, int chave), size_t tamanho_struct);
-TComp *buscaComputadorBinario(int chave, FILE *in, FILE *log);
-TClie *buscaClienteBinario(int chave, FILE *in, FILE *log);
-TLoca *buscaLocacaoBinaria(int chave, FILE *in, FILE *log);
+void *buscaBinariaGenerica(void *vetor, long num_registros, size_t tamanho_struct, int chave, int (*compara)(const void *elemento, int chave), FILE *log);
+
+TComp *buscaComputadorBinario(TComp *vetor_comp, int qtd_comp, int chave, FILE *log);
+TClie *buscaClienteBinario(TClie *vetor_clie, int qtd_clie, int chave, FILE *log);
+TLoca *buscaLocacaoBinaria(TLoca *vetor_loca, int qtd_loca, int chave, FILE *log);
 
 #endif // BUSCA_BINARIA_H
