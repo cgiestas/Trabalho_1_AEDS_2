@@ -300,8 +300,8 @@ void imprimirBase(FILE *out, int escolha){
 
 int compara_comp(const void *a, const void *b)
 {
-    const TComp *compA = (const TComp *)a;
-    const TComp *compB = (const TComp *)b;
+    const TComp *compA = *(const TComp **)a;
+    const TComp *compB = *(const TComp **)b;
     if (compA->cod < compB->cod) return -1;
     if (compA->cod > compB->cod) return 1;
     return 0;
@@ -310,8 +310,8 @@ int compara_comp(const void *a, const void *b)
 
 int compara_clie(const void *a, const void *b)
 {
-	const TClie *clieA = (const TClie *)a;
-    const TClie *clieB = (const TClie *)b;
+	const TClie *clieA = *(const TClie **)a;
+    const TClie *clieB = *(const TClie **)b;
     if (clieA->cod < clieB->cod) return -1;
     if (clieA->cod > clieB->cod) return 1;
     return 0;
@@ -319,8 +319,8 @@ int compara_clie(const void *a, const void *b)
 
 int compara_loca(const void *a, const void *b)
 {
-    const TLoca *locaA = (const TLoca *)a;
-    const TLoca *locaB = (const TLoca *)b;
+    const TLoca *locaA = *(const TLoca **)a;
+    const TLoca *locaB = *(const TLoca **)b;
     if (locaA->cod < locaB->cod) return -1;
     if (locaA->cod > locaB->cod) return 1;
     return 0;

@@ -1,34 +1,4 @@
-Elemento com chave 2 encontrado.
+Elemento com chave 1 encontrado na posicao 0.
+Elemento com chave 1 encontrado na posicao 0.
+Elemento com chave 4 encontrado na posicao 3.
 Elemento com chave 1 encontrado.
-Nova locacao (cod: 1) criada para o cliente 2 e computador 1.
-Status do computador 1 atualizado para indisponivel.
-Elemento com chave 3 encontrado.
-Elemento com chave 5 encontrado.
-Nova locacao (cod: 2) criada para o cliente 3 e computador 5.
-Status do computador 5 atualizado para indisponivel.
-Locacao 1 finalizada.
-Computador 1 disponibilizado.
-Busca por locacoes do cliente 3 realizada. 1 encontradas.
-Elemento com chave 3 encontrado.
-Elemento com chave 6 nao encontrado.
-Tentativa de aluguel falhou: Cliente com codigo 6 nao existe.
-Elemento com chave 5 encontrado.
-Elemento com chave 2 encontrado.
-Nova locacao (cod: 1) criada para o cliente 5 e computador 2.
-Status do computador 2 atualizado para indisponivel.
-Busca por locacoes do cliente 5 realizada. 1 encontradas.
-Locacao 1 finalizada.
-Computador 2 disponibilizado.
-Busca por locacoes do cliente 5 realizada. 1 encontradas.
-Elemento com chave 1 encontrado.
-Elemento com chave 1 encontrado.
-Nova locacao (cod: 2) criada para o cliente 1 e computador 1.
-Status do computador 1 atualizado para indisponivel.
-Elemento com chave 3 encontrado.
-Elemento com chave 1 encontrado.
-Tentativa de aluguel falhou: Computador 1 indisponivel.
-Elemento com chave 1 encontrado.
-Iniciando busca binaria por chave 5. Total de registros: 5
-Chave 5 maior que elemento em 2. Nova faixa: [3, 4]
-Chave 5 maior que elemento em 3. Nova faixa: [4, 4]
-Elemento com chave 5 encontrado na posicao 4.

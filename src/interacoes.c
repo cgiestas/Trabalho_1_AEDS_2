@@ -8,60 +8,6 @@
 #include <time.h>
 // Locar computador, finalizar locação, lista de computadores e locações feitas por cliente
 
-TComp *carregaComp(FILE *arquivo, int *qtd) {
-    fseek(arquivo, 0, SEEK_END);
-    long tamanho = ftell(arquivo);
-    *qtd = tamanho / sizeof(TComp);
-    rewind(arquivo);
-
-    if (*qtd == 0) return NULL;
-
-    TComp *vetor = malloc(tamanho);
-    if (!vetor) {
-        printf("Erro ao alocar memoria!!!!!\n");
-        exit(1);
-    }
-
-    fread(vetor, sizeof(TComp), *qtd, arquivo);
-    return vetor;
-}
-
-TClie *carregaClie(FILE *arquivo, int *qtd){
-    fseek(arquivo, 0, SEEK_END);
-    long tamanho = ftell (arquivo);
-    *qtd = tamanho /sizeof(TClie);
-    rewind(arquivo);
-
-    if(*qtd == 0) return NULL;
-
-    TClie *vetor = malloc(tamanho);
-    if(!vetor){
-        printf("Erro ao alocar memoria!!!!!");
-        exit(1);
-    }
-
-    fread(vetor, sizeof(TClie), *qtd, arquivo);
-    return vetor;
-}
-
-TLoca*carregaLoca(FILE *arquivo, int *qtd){
-    fseek(arquivo, 0, SEEK_END);
-    long tamanho = ftell (arquivo);
-    *qtd = tamanho /sizeof(TLoca);
-    rewind(arquivo);
-
-    if(*qtd == 0) return NULL;
-
-    TLoca *vetor = malloc(tamanho);
-    if(!vetor){
-        printf("Erro ao alocar memoria!!!!!");
-        exit(1);
-    }
-
-    fread(vetor, sizeof(TLoca), *qtd, arquivo);
-    return vetor;
-}
-
 void alugarComputador(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log, int cod_clie, int cod_comp, int quantidade, const char* data_inicial, const char* data_final) {
     
     TClie *cliente = (TClie *)buscaSequencialGenerica(cod_clie, f_clie, f_log, comparaTClie, sizeof(TClie));
@@ -86,18 +32,23 @@ void alugarComputador(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log, int
         return;
     }
     
-    int qtd_loca;
-    rewind(f_loca);
-    TLoca* locacoes = carregaLoca(f_loca, &qtd_loca);
-    int proximo_cod_loca = (qtd_loca > 0) ? locacoes[qtd_loca - 1].cod + 1 : 1;
-    if (locacoes != NULL) {
-        free(locacoes);
+    int proximo_cod_loca = 1; //valor padrão se o arquivo estiver vazio
+    fseek(f_loca, 0, SEEK_END); //vai para o final do arquivo de locações
+    long tamanho_arquivo = ftell(f_loca); //pega o tamanho total do arquivo
+    if (tamanho_arquivo > 0) {
+        //se o arquivo não está vazio, posiciona no início do último registro
+        fseek(f_loca, sizeof(TLoca), SEEK_END);
+        //lê apenas o último registro
+        TLoca *ultima_locacao = leloca(f_loca); 
+        if (ultima_locacao != NULL) {
+            proximo_cod_loca = ultima_locacao->cod + 1;
+            free(ultima_locacao);
+        }
     }
 
     float valor_total = computador->valor * quantidade;
     TLoca *nova_locacao = locacao(proximo_cod_loca, cod_comp, cod_clie, quantidade, (char*)data_inicial, (char*)data_final, valor_total, 1);
     
-    fseek(f_loca, 0, SEEK_END);
     salvaloca(nova_locacao, f_loca);
     printf("\nLocacao do computador %s para o cliente de codigo %d realizada com sucesso!\n", computador->modelo, cod_clie);
     fprintf(f_log, "Nova locacao (cod: %d) criada para o cliente %d e computador %d.\n", nova_locacao->cod, cod_clie, cod_comp);
@@ -310,8 +261,7 @@ void menuBuscaSequencial(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *f_log){
     }
 }
 
-void menuBuscaBinaria(TComp *vetor_comp, int qtd_comp, TClie *vetor_clie, int qtd_clie, TLoca *vetor_loca, int qtd_loca, FILE *log)
-{
+void menuBuscaBinaria(FILE *f_comp, FILE *f_clie, FILE *f_loca, FILE *log) {
     int escolha, chave;
     printf("\n--- Busca Binaria ---\n");
     printf("LEMBRE-SE: Os dados devem estar ordenados para a busca binaria funcionar.\n");
@@ -320,57 +270,65 @@ void menuBuscaBinaria(TComp *vetor_comp, int qtd_comp, TClie *vetor_clie, int qt
     printf("Digite o codigo (chave) a ser buscado: ");
     scanf("%d", &chave);
 
-    switch(escolha){
+    rewind(f_comp);
+    rewind(f_clie);
+    rewind(f_loca);
+
+    switch (escolha) {
         case 1: {
-            TComp *computador_encontrado_bin = buscaComputadorBinario(vetor_comp, qtd_comp, chave, log);
-            
-            if (computador_encontrado_bin != NULL) {
-                printf("Computador encontrado (Binaria): ID %d, Marca %s, Modelo %s, Processador %s, Valor unitario %f, disponivel %d\n", 
-                    computador_encontrado_bin->cod, computador_encontrado_bin->marca,
-                    computador_encontrado_bin->modelo, computador_encontrado_bin->processador, 
-                    computador_encontrado_bin->valor, computador_encontrado_bin->disponivel);
+            TComp *comp = buscaComputadorBinario(f_comp, chave, log);
+            if (comp != NULL) {
+                imprimecomp(comp);
+                free(comp);
             } else {
-                printf("Computador com ID %d nao encontrado (Binaria).\n", chave);
+                printf("Computador com ID %d nao encontrado.\n", chave);
             }
-            printf("\n");
             break;
         }
         case 2: {
-            TClie* c = buscaClienteBinario(vetor_clie, qtd_clie, chave, log);
-            if(c) { 
-                imprimeclie(c); 
-            } else { 
-                printf("Nao encontrado.\n"); 
+            TClie *clie = buscaClienteBinario(f_clie, chave, log);
+            if (clie != NULL) {
+                imprimeclie(clie);
+                free(clie);
+            } else {
+                printf("Cliente com ID %d nao encontrado.\n", chave);
             }
             break;
         }
         case 3: {
-            TLoca *locacao_encontrada_bin = buscaLocacaoBinaria(vetor_loca, qtd_loca, chave, log);
+            TLoca *loca = buscaLocacaoBinario(f_loca, chave, log);
+            if (loca != NULL) {
+                imprimeloca(loca);
 
-            if (locacao_encontrada_bin != NULL) {
-                printf("Locacao encontrada (Binaria): ID %d\n", locacao_encontrada_bin->cod);
+                // Buscar cliente associado
+                rewind(f_clie);
+                TClie *clie = buscaClienteBinario(f_clie, loca->cod_clie, log);
+                if (clie) {
+                    printf("\nCliente associado:\n");
+                    imprimeclie(clie);
+                    free(clie);
+                } else {
+                    printf("Cliente com ID %d nao encontrado.\n", loca->cod_clie);
+                }
 
-                TClie *cliente_da_locacao = buscaClienteBinario(vetor_clie, qtd_clie, locacao_encontrada_bin->cod_clie, log);
-                if (cliente_da_locacao != NULL) {
-                    printf("  Cliente: ID %d, Nome: %s\n", cliente_da_locacao->cod, cliente_da_locacao->nome);
+                // Buscar computador associado
+                rewind(f_comp);
+                TComp *comp = buscaComputadorBinario(f_comp, loca->cod_comp, log);
+                if (comp) {
+                    printf("\nComputador associado:\n");
+                    imprimecomp(comp);
+                    free(comp);
                 } else {
-                    printf("  Cliente com ID %d (associado a locacao) nao encontrado.\n", locacao_encontrada_bin->cod_clie);
+                    printf("Computador com ID %d nao encontrado.\n", loca->cod_comp);
                 }
-                TComp *computador_da_locacao = buscaComputadorBinario(vetor_comp, qtd_comp, locacao_encontrada_bin->cod_comp, log);
-                if (computador_da_locacao != NULL) {
-                    printf("  Computador: ID %d, Marca: %s, Modelo: %s\n",
-                           computador_da_locacao->cod,
-                           computador_da_locacao->marca,
-                           computador_da_locacao->modelo);
-                } else {
-                    printf("  Computador com ID %d (associado a locacao) nao encontrado.\n", locacao_encontrada_bin->cod_comp);
-                }
-                
+
+                free(loca);
             } else {
-                printf("Locacao com ID %d nao encontrada (Binaria).\n", chave);
+                printf("Locacao com ID %d nao encontrada.\n", chave);
             }
             break;
         }
-        default: printf("Opcao invalida.\n");
+        default:
+            printf("Opcao invalida.\n");
     }
 }

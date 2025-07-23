@@ -45,7 +45,6 @@ int main()
     TComp *comp = NULL;
     TClie *clie = NULL;
     TLoca *loca = NULL;
-    int qtd_comp = 0, qtd_clie = 0, qtd_loca = 0;
 
     do
     {
@@ -100,7 +99,17 @@ int main()
         {
             if (dados_ordenados)
             {
-                menuBuscaBinaria(comp, qtd_comp, clie, qtd_clie, loca, qtd_loca, log);
+                FILE *f_comp = fopen("computadores.dat", "rb");
+                FILE *f_clie = fopen("clientes.dat", "rb");
+                FILE *f_loca = fopen("locacoes.dat", "rb");
+                FILE *log = fopen("log.txt", "a");
+
+                menuBuscaBinaria(f_comp, f_clie, f_loca, log);
+
+                fclose(f_comp);
+                fclose(f_clie);
+                fclose(f_loca);
+                fclose(log);
             }
             else
             {
@@ -110,42 +119,23 @@ int main()
             break;
         }
         case 7:
-            if (comp)
-                free(comp);
-            if (clie)
-                free(clie);
-            if (loca)
-                free(loca);
+            int tam_bloco = 100; //tamanho máximo de indices de cada bloco na ram
+            merge_externo_comp("computadores.dat", tam_bloco);
+            merge_externo_clie("clientes.dat", tam_bloco);
+            merge_externo_loca("locacoes.dat", tam_bloco);
+            // reabre os arquivos para leitura após ordenação 
+            FILE *computadores = fopen("computadores.dat", "rb");
+            FILE *clientes = fopen("clientes.dat", "rb");
+            FILE *locacoes = fopen("locacoes.dat", "rb");
 
-            // Carrega os dados dos arquivos para a memória
-            comp = carregaComp(computadores, &qtd_comp);
-            clie = carregaClie(clientes, &qtd_clie);
-            loca = carregaLoca(locacoes, &qtd_loca);
-
-            // Ordena os vetores em memória
-            mergesort(comp, qtd_comp, sizeof(TComp), compara_comp);
-            mergesort(clie, qtd_clie, sizeof(TClie), compara_clie);
-            mergesort(loca, qtd_loca, sizeof(TLoca), compara_loca);
-
-            // Reescreve os arquivos com os dados ordenados
-            freopen("computadores.dat", "w+b", computadores);
-            for (int i = 0; i < qtd_comp; i++)
-                salvacomp(&comp[i], computadores);
-
-            freopen("clientes.dat", "w+b", clientes);
-            for (int i = 0; i < qtd_clie; i++)
-                salvaclie(&clie[i], clientes);
-
-            freopen("locacoes.dat", "w+b", locacoes);
-            for (int i = 0; i < qtd_loca; i++)
-                salvaloca(&loca[i], locacoes);
-
-            printf("\n--- DADOS ORDENADOS ---\n");
             imprimirBase(computadores, 1);
             imprimirBase(clientes, 2);
             imprimirBase(locacoes, 3);
 
-            dados_ordenados = 1; // Marca que os dados agora estão ordenados
+            fclose(computadores);
+            fclose(clientes);
+            fclose(locacoes);
+            dados_ordenados = 1; //marca que os dados agora estão ordenados
             break;
         case 0:
             printf("Saindo do programa...\n");
